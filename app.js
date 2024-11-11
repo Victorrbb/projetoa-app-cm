@@ -1,10 +1,19 @@
 import * as React from 'react';
-import { TextInput, Text, View, Button, StyleSheet, TouchableOpacity } from 'react-native';
+import {
+  TextInput,
+  Text,
+  View,
+  Button,
+  StyleSheet,
+  TouchableOpacity,
+  Image,Vibration
+} from 'react-native';
 import { NavigationContainer } from '@react-navigation/native'; // Importar NavigationContainer
 import { createStackNavigator } from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FlatList, Modal } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
+
 
 const Stack = createStackNavigator();
 
@@ -38,7 +47,8 @@ class Principal extends React.Component {
         <View style={styles.buttonContainer}>
           <Button title="Logar" onPress={() => this.ler()} color="#DAA520" />
         </View>
-        <TouchableOpacity onPress={() => this.props.navigation.navigate('Criar Usuário')}>
+        <TouchableOpacity
+          onPress={() => this.props.navigation.navigate('Criar Usuário')}>
           <Text style={styles.linkText}>Não tem uma conta? Cadastre-se</Text>
         </TouchableOpacity>
       </View>
@@ -50,16 +60,15 @@ class Principal extends React.Component {
       let senha = await AsyncStorage.getItem(this.state.usuario);
       if (senha != null && senha === this.state.senha) {
         // Passando o usuário corretamente para a Home
-        this.props.navigation.navigate("Home", { usuario: this.state.usuario });
+        this.props.navigation.navigate('Home', { usuario: this.state.usuario });
       } else {
-        alert("Usuário ou senha incorretos!");
+        alert('Usuário ou senha incorretos!');
       }
     } catch (erro) {
       console.log(erro);
     }
   }
 }
-
 
 class Cadastro extends React.Component {
   constructor(props) {
@@ -73,11 +82,11 @@ class Cadastro extends React.Component {
   async gravar() {
     try {
       await AsyncStorage.setItem(this.state.user, this.state.password);
-      alert("Cadastro realizado com sucesso!");
+      alert('Cadastro realizado com sucesso!');
       // Passando o nome de usuário após o cadastro
-      this.props.navigation.navigate("Home", { usuario: this.state.user });
+      this.props.navigation.navigate('Home', { usuario: this.state.user });
     } catch (erro) {
-      alert("Erro ao salvar!");
+      alert('Erro ao salvar!');
     }
   }
 
@@ -100,7 +109,11 @@ class Cadastro extends React.Component {
           placeholderTextColor="#AFAFAF"
         />
         <View style={styles.buttonContainer}>
-          <Button title="Cadastrar" onPress={() => this.gravar()} color="#DAA520" />
+          <Button
+            title="Cadastrar"
+            onPress={() => this.gravar()}
+            color="#DAA520"
+          />
         </View>
       </View>
     );
@@ -108,33 +121,96 @@ class Cadastro extends React.Component {
 }
 
 class HomeScreen extends React.Component {
+  handleButtonPress = () => {
+    Vibration.vibrate(100); // A vibração vai durar 100ms
+  };
+
   render() {
     const { usuario } = this.props.route.params; // Obtendo o nome do usuário
 
     return (
       <View style={styles.container}>
         <Text style={styles.welcomeText}>Bem-vindo, {usuario}!</Text>
-        
+
         {/* Botão para acessar o calendário de transações */}
         <TouchableOpacity
           style={styles.button}
-          onPress={() => this.props.navigation.navigate('Calendário de Transações', { usuario: usuario })}
-        >
+          onPress={() => {
+            this.handleButtonPress();
+            this.props.navigation.navigate('Calendário de Transações', {
+              usuario: usuario,
+            });
+          }}>
           <Text style={styles.buttonText}>Acessar Calendário de Transações</Text>
         </TouchableOpacity>
 
         {/* Novo botão para acessar o calendário de investimentos */}
         <TouchableOpacity
           style={styles.button}
-          onPress={() => this.props.navigation.navigate('Calendário de Investimentos', { usuario: usuario })} // Navegar para o calendário de investimentos
-        >
+          onPress={() => {
+            this.handleButtonPress();
+            this.props.navigation.navigate('Calendário de Investimentos', {
+              usuario: usuario,
+            });
+          }}>
           <Text style={styles.buttonText}>Acessar Calendário de Investimentos</Text>
+        </TouchableOpacity>
+
+        {/* Novo botão para acessar Dicas Financeiras */}
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => {
+            this.handleButtonPress();
+            this.props.navigation.navigate('Dicas Financeiras');
+          }}>
+          <Text style={styles.buttonText}>Dicas Financeiras</Text>
         </TouchableOpacity>
       </View>
     );
   }
 }
+class FinancialTipsScreen extends React.Component {
+  render() {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.title}>Dicas Financeiras</Text>
 
+        {/* Primeira imagem */}
+        <Image
+          source={require('./assets/913d64b9fccbb80953a544db607ed561.jpg')}
+          style={styles.image}
+        />
+        <Text style={styles.infoText}>
+          1. Faça um planejamento financeiro mensal.
+        </Text>
+
+        {/* Segunda imagem */}
+        <Image
+          source={require('./assets/marcia-41.jpg')}
+          style={styles.image}
+        />
+        <Text style={styles.infoText}>
+          2. Evite gastar mais do que ganha.
+        </Text>
+
+        {/* Mais dicas... */}
+        <Image
+          source={require('./assets/913d64b9fccbb80953a544db607ed561.jpg')} // Outra imagem
+          style={styles.image}
+        />
+        <Text style={styles.infoText}>
+          3. Invista em um fundo de emergência.
+        </Text>
+
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => this.props.navigation.goBack()}>
+          <Text style={styles.buttonText}>Voltar</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+}
 class CalendarScreen extends React.Component {
   constructor(props) {
     super(props);
@@ -158,12 +234,14 @@ class CalendarScreen extends React.Component {
   async loadTransactions() {
     const { usuario } = this.props.route.params;
     try {
-      const savedTransactions = await AsyncStorage.getItem(`${usuario}_transactions`);
+      const savedTransactions = await AsyncStorage.getItem(
+        `${usuario}_transactions`
+      );
       if (savedTransactions) {
         this.setState({ transactions: JSON.parse(savedTransactions) });
       }
     } catch (error) {
-      console.log("Erro ao carregar transações:", error);
+      console.log('Erro ao carregar transações:', error);
     }
   }
 
@@ -176,11 +254,21 @@ class CalendarScreen extends React.Component {
     }
 
     const { usuario } = this.props.route.params;
-    const newTransaction = { day, weekDay, month, year, transactionType, amount };
+    const newTransaction = {
+      day,
+      weekDay,
+      month,
+      year,
+      transactionType,
+      amount,
+    };
     const updatedTransactions = [...this.state.transactions, newTransaction];
 
     try {
-      await AsyncStorage.setItem(`${usuario}_transactions`, JSON.stringify(updatedTransactions));
+      await AsyncStorage.setItem(
+        `${usuario}_transactions`,
+        JSON.stringify(updatedTransactions)
+      );
       this.setState({
         transactions: updatedTransactions,
         modalVisible: false,
@@ -193,20 +281,25 @@ class CalendarScreen extends React.Component {
       });
       alert('Transação salva!');
     } catch (error) {
-      console.log("Erro ao salvar transação:", error);
+      console.log('Erro ao salvar transação:', error);
     }
   }
 
   // Excluir transação específica do usuário
   async deleteTransaction(index) {
     const { usuario } = this.props.route.params;
-    const updatedTransactions = this.state.transactions.filter((_, i) => i !== index);
+    const updatedTransactions = this.state.transactions.filter(
+      (_, i) => i !== index
+    );
     try {
-      await AsyncStorage.setItem(`${usuario}_transactions`, JSON.stringify(updatedTransactions));
+      await AsyncStorage.setItem(
+        `${usuario}_transactions`,
+        JSON.stringify(updatedTransactions)
+      );
       this.setState({ transactions: updatedTransactions });
       alert('Transação excluída!');
     } catch (error) {
-      console.log("Erro ao excluir transação:", error);
+      console.log('Erro ao excluir transação:', error);
     }
   }
 
@@ -221,7 +314,8 @@ class CalendarScreen extends React.Component {
           renderItem={({ item, index }) => (
             <View style={styles.transactionItem}>
               <Text style={styles.transactionText}>
-                {item.day}/{item.month}/{item.year} ({item.weekDay}): {item.transactionType} - R${item.amount}
+                {item.day}/{item.month}/{item.year} ({item.weekDay}):{' '}
+                {item.transactionType} - R${item.amount}
               </Text>
               <Button
                 title="Apagar"
@@ -234,16 +328,14 @@ class CalendarScreen extends React.Component {
 
         <TouchableOpacity
           style={styles.addButton}
-          onPress={() => this.setState({ modalVisible: true })}
-        >
+          onPress={() => this.setState({ modalVisible: true })}>
           <Text style={styles.addButtonText}>+ Adicionar Transação</Text>
         </TouchableOpacity>
 
         <Modal
           visible={this.state.modalVisible}
           animationType="slide"
-          transparent={true}
-        >
+          transparent={true}>
           <View style={styles.modalContainer}>
             <Text style={styles.modalTitle}>Adicionar Transação</Text>
 
@@ -277,8 +369,9 @@ class CalendarScreen extends React.Component {
             <Picker
               selectedValue={this.state.transactionType}
               style={styles.picker}
-              onValueChange={(itemValue) => this.setState({ transactionType: itemValue })}
-            >
+              onValueChange={(itemValue) =>
+                this.setState({ transactionType: itemValue })
+              }>
               <Picker.Item label="Recebida" value="Recebida" />
               <Picker.Item label="Enviada" value="Enviada" />
             </Picker>
@@ -330,31 +423,44 @@ class InvestmentCalendarScreen extends React.Component {
 
   // Carregar investimentos do AsyncStorage
   async loadInvestments() {
-    const { usuario } = this.props.route.params;  // Obtendo o nome do usuário passado via navegação
+    const { usuario } = this.props.route.params; // Obtendo o nome do usuário passado via navegação
     try {
-      const savedInvestments = await AsyncStorage.getItem(`${usuario}_investments`);
+      const savedInvestments = await AsyncStorage.getItem(
+        `${usuario}_investments`
+      );
       if (savedInvestments) {
         this.setState({ investments: JSON.parse(savedInvestments) });
       }
     } catch (error) {
-      console.log("Erro ao carregar investimentos:", error);
+      console.log('Erro ao carregar investimentos:', error);
     }
   }
 
   // Salvar investimento
   async saveInvestment() {
-    const { day, month, year, investmentType, amount, description } = this.state;
+    const { day, month, year, investmentType, amount, description } =
+      this.state;
     if (!day || !month || !year || !investmentType || !amount || !description) {
       alert('Por favor, preencha todos os campos.');
       return;
     }
 
     const { usuario } = this.props.route.params;
-    const newInvestment = { day, month, year, investmentType, amount, description };
+    const newInvestment = {
+      day,
+      month,
+      year,
+      investmentType,
+      amount,
+      description,
+    };
     const updatedInvestments = [...this.state.investments, newInvestment];
 
     try {
-      await AsyncStorage.setItem(`${usuario}_investments`, JSON.stringify(updatedInvestments));
+      await AsyncStorage.setItem(
+        `${usuario}_investments`,
+        JSON.stringify(updatedInvestments)
+      );
       this.setState({
         investments: updatedInvestments,
         modalVisible: false,
@@ -367,20 +473,25 @@ class InvestmentCalendarScreen extends React.Component {
       });
       alert('Investimento salvo!');
     } catch (error) {
-      console.log("Erro ao salvar investimento:", error);
+      console.log('Erro ao salvar investimento:', error);
     }
   }
 
   // Excluir investimento
   async deleteInvestment(index) {
     const { usuario } = this.props.route.params;
-    const updatedInvestments = this.state.investments.filter((_, i) => i !== index);
+    const updatedInvestments = this.state.investments.filter(
+      (_, i) => i !== index
+    );
     try {
-      await AsyncStorage.setItem(`${usuario}_investments`, JSON.stringify(updatedInvestments));
+      await AsyncStorage.setItem(
+        `${usuario}_investments`,
+        JSON.stringify(updatedInvestments)
+      );
       this.setState({ investments: updatedInvestments });
       alert('Investimento excluído!');
     } catch (error) {
-      console.log("Erro ao excluir investimento:", error);
+      console.log('Erro ao excluir investimento:', error);
     }
   }
 
@@ -395,7 +506,8 @@ class InvestmentCalendarScreen extends React.Component {
           renderItem={({ item, index }) => (
             <View style={styles.transactionItem}>
               <Text style={styles.transactionText}>
-                {item.day}/{item.month}/{item.year}: {item.investmentType} - R${item.amount} ({item.description})
+                {item.day}/{item.month}/{item.year}: {item.investmentType} - R$
+                {item.amount} ({item.description})
               </Text>
               <Button
                 title="Apagar"
@@ -408,16 +520,14 @@ class InvestmentCalendarScreen extends React.Component {
 
         <TouchableOpacity
           style={styles.addButton}
-          onPress={() => this.setState({ modalVisible: true })}
-        >
+          onPress={() => this.setState({ modalVisible: true })}>
           <Text style={styles.addButtonText}>+ Adicionar Investimento</Text>
         </TouchableOpacity>
 
         <Modal
           visible={this.state.modalVisible}
           animationType="slide"
-          transparent={true}
-        >
+          transparent={true}>
           <View style={styles.modalContainer}>
             <Text style={styles.modalTitle}>Adicionar Investimento</Text>
 
@@ -445,10 +555,14 @@ class InvestmentCalendarScreen extends React.Component {
             <Picker
               selectedValue={this.state.investmentType}
               style={styles.picker}
-              onValueChange={(itemValue) => this.setState({ investmentType: itemValue })}
-            >
+              onValueChange={(itemValue) =>
+                this.setState({ investmentType: itemValue })
+              }>
               <Picker.Item label="Ações" value="Ações" />
-              <Picker.Item label="Fundo Imobiliário" value="Fundo Imobiliário" />
+              <Picker.Item
+                label="Fundo Imobiliário"
+                value="Fundo Imobiliário"
+              />
               <Picker.Item label="Cripto" value="Cripto" />
               <Picker.Item label="Renda Fixa" value="Renda Fixa" />
             </Picker>
@@ -487,27 +601,30 @@ class InvestmentCalendarScreen extends React.Component {
   }
 }
 
-
 export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Login">
         <Stack.Screen name="Login" component={Principal} />
         <Stack.Screen name="Criar Usuário" component={Cadastro} />
-        <Stack.Screen 
-          name="Home" 
-          component={HomeScreen} 
-          options={{ title: "Página Inicial" }} 
+        <Stack.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{ title: 'Página Inicial' }}
         />
-        <Stack.Screen 
-          name="Calendário de Transações" 
-          component={CalendarScreen} 
+        <Stack.Screen
+          name="Calendário de Transações"
+          component={CalendarScreen}
           initialParams={{ usuario: 'default_user' }} // Passando nome de usuário para a tela
         />
-        <Stack.Screen 
-          name="Calendário de Investimentos" 
-          component={InvestmentCalendarScreen} 
+        <Stack.Screen
+          name="Calendário de Investimentos"
+          component={InvestmentCalendarScreen}
           initialParams={{ usuario: 'default_user' }} // Passando nome de usuário para a tela de investimentos
+        />
+        <Stack.Screen
+          name="Dicas Financeiras"
+          component={FinancialTipsScreen} // A nova tela de dicas financeiras
         />
       </Stack.Navigator>
     </NavigationContainer>
@@ -517,49 +634,49 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#000",
-    alignItems: "center",
-    justifyContent: "center",
+    backgroundColor: '#000',
+    alignItems: 'center',
+    justifyContent: 'center',
     padding: 20,
   },
   welcomeText: {
-    color: "#DAA520",
+    color: '#DAA520',
     fontSize: 22,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     marginBottom: 20,
   },
   button: {
-    backgroundColor: "#DAA520",
+    backgroundColor: '#DAA520',
     padding: 15,
     borderRadius: 5,
-    width: "100%",
-    alignItems: "center",
+    width: '100%',
+    alignItems: 'center',
     marginVertical: 10,
   },
   buttonText: {
-    color: "#000",
+    color: '#000',
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   title: {
-    color: "#DAA520",
+    color: '#DAA520',
     fontSize: 24,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     marginBottom: 15,
   },
   infoText: {
-    color: "#FFF",
+    color: '#FFF',
     fontSize: 16,
-    textAlign: "center",
+    textAlign: 'center',
   },
   label: {
-    color: "#DAA520",
+    color: '#DAA520',
     fontSize: 18,
     marginBottom: 5,
   },
   input: {
-    backgroundColor: "#FFF",
-    color: "#000",
+    backgroundColor: '#FFF',
+    color: '#000',
     padding: 10,
     borderRadius: 5,
     marginBottom: 15,
@@ -569,11 +686,11 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   linkText: {
-    color: "#DAA520",
+    color: '#DAA520',
     fontSize: 16,
     marginTop: 20,
-    textAlign: "center",
-    textDecorationLine: "underline",
+    textAlign: 'center',
+    textDecorationLine: 'underline',
   },
   transactionItem: {
     padding: 10,
@@ -615,17 +732,24 @@ const styles = StyleSheet.create({
 
   // Novos estilos adicionados
   picker: {
-    backgroundColor: "#333",
-    color: "#DAA520",
+    backgroundColor: '#333',
+    color: '#DAA520',
     marginVertical: 10,
-    width: "100%",
+    width: '100%',
+  },
+
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 20,
   },
   
-  
-modalButtons: {
-  flexDirection: 'row',
-  justifyContent: 'space-between',
-  marginTop: 20,
-},
 
+  image: {
+    width: '100%',  // Tamanho da imagem proporcional à largura da tela
+    height: 200,    // Altura fixa, ajustando para o layout
+    resizeMode: 'contain', // Ajusta a imagem sem distorção
+    marginBottom: 20,
+  },
+  
 });
