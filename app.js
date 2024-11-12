@@ -337,6 +337,7 @@ class CalendarScreen extends React.Component {
                 <TextInput
                   style={styles.input}
                   placeholder="Dia"
+                   placeholderTextColor="#DAA520" // Alterado para uma cor visível
                   onChangeText={(text) => this.setState({ day: text })}
                   value={this.state.day}
                   keyboardType="numeric"
@@ -344,18 +345,21 @@ class CalendarScreen extends React.Component {
                 <TextInput
                   style={styles.input}
                   placeholder="Dia da Semana"
+                   placeholderTextColor="#DAA520" // Alterado para uma cor visível
                   onChangeText={(text) => this.setState({ weekDay: text })}
                   value={this.state.weekDay}
                 />
                 <TextInput
                   style={styles.input}
                   placeholder="Mês"
+                   placeholderTextColor="#DAA520" // Alterado para uma cor visível
                   onChangeText={(text) => this.setState({ month: text })}
                   value={this.state.month}
                 />
                 <TextInput
                   style={styles.input}
                   placeholder="Ano"
+                   placeholderTextColor="#DAA520" // Alterado para uma cor visível
                   onChangeText={(text) => this.setState({ year: text })}
                   value={this.state.year}
                   keyboardType="numeric"
@@ -374,6 +378,7 @@ class CalendarScreen extends React.Component {
                 <TextInput
                   style={styles.input}
                   placeholder="Valor"
+                   placeholderTextColor="#DAA520" // Alterado para uma cor visível
                   onChangeText={(text) => this.setState({ amount: text })}
                   value={this.state.amount}
                   keyboardType="numeric"
@@ -524,6 +529,7 @@ class InvestmentCalendarScreen extends React.Component {
                   <TextInput
                     style={styles.input}
                     placeholder="Dia"
+                     placeholderTextColor="#DAA520" // Alterado para uma cor visível
                     onChangeText={(text) => this.setState({ day: text })}
                     value={this.state.day}
                     keyboardType="numeric"
@@ -531,12 +537,14 @@ class InvestmentCalendarScreen extends React.Component {
                   <TextInput
                     style={styles.input}
                     placeholder="Mês"
+                     placeholderTextColor="#DAA520" // Alterado para uma cor visível
                     onChangeText={(text) => this.setState({ month: text })}
                     value={this.state.month}
                   />
                   <TextInput
                     style={styles.input}
                     placeholder="Ano"
+                     placeholderTextColor="#DAA520" // Alterado para uma cor visível
                     onChangeText={(text) => this.setState({ year: text })}
                     value={this.state.year}
                     keyboardType="numeric"
@@ -557,6 +565,7 @@ class InvestmentCalendarScreen extends React.Component {
                   <TextInput
                     style={styles.input}
                     placeholder="Valor"
+                     placeholderTextColor="#DAA520" // Alterado para uma cor visível
                     onChangeText={(text) => this.setState({ amount: text })}
                     value={this.state.amount}
                     keyboardType="numeric"
@@ -565,6 +574,7 @@ class InvestmentCalendarScreen extends React.Component {
                   <TextInput
                     style={styles.input}
                     placeholder="Descrição (Onde Investiu)"
+                     placeholderTextColor="#DAA520" // Alterado para uma cor visível
                     onChangeText={(text) => this.setState({ description: text })}
                     value={this.state.description}
                   />
