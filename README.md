@@ -31,6 +31,8 @@ Nesta pagina será aonde o usuario colocara que tipo de investimento ele fez,dat
 
 # Dicas financeiras
 E por fim dicas financeiras nesta aba você vera duas dicas financeiras com duas tirinhas, as quais considero importante para as pessoas conseguirem ter uma vida financeira melhor.
+
+
 ![image](https://github.com/user-attachments/assets/6811729d-f5ed-4f29-ad4a-4a1f3fa07bb5)
 
 
