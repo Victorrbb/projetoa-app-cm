@@ -6,14 +6,16 @@ import {
   Button,
   StyleSheet,
   TouchableOpacity,
-  Image,Vibration
+  Image,
+  KeyboardAvoidingView,
+  TouchableWithoutFeedback,
+  Keyboard,Vibration
 } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native'; // Importar NavigationContainer
 import { createStackNavigator } from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FlatList, Modal } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-
 
 const Stack = createStackNavigator();
 
@@ -121,10 +123,6 @@ class Cadastro extends React.Component {
 }
 
 class HomeScreen extends React.Component {
-  handleButtonPress = () => {
-    Vibration.vibrate(100); // A vibração vai durar 100ms
-  };
-
   render() {
     const { usuario } = this.props.route.params; // Obtendo o nome do usuário
 
@@ -136,11 +134,12 @@ class HomeScreen extends React.Component {
         <TouchableOpacity
           style={styles.button}
           onPress={() => {
-            this.handleButtonPress();
+            Vibration.vibrate(); // Adiciona vibração ao pressionar
             this.props.navigation.navigate('Calendário de Transações', {
               usuario: usuario,
             });
-          }}>
+          }}
+        >
           <Text style={styles.buttonText}>Acessar Calendário de Transações</Text>
         </TouchableOpacity>
 
@@ -148,11 +147,12 @@ class HomeScreen extends React.Component {
         <TouchableOpacity
           style={styles.button}
           onPress={() => {
-            this.handleButtonPress();
+            Vibration.vibrate(); // Adiciona vibração ao pressionar
             this.props.navigation.navigate('Calendário de Investimentos', {
               usuario: usuario,
             });
-          }}>
+          }}
+        >
           <Text style={styles.buttonText}>Acessar Calendário de Investimentos</Text>
         </TouchableOpacity>
 
@@ -160,9 +160,10 @@ class HomeScreen extends React.Component {
         <TouchableOpacity
           style={styles.button}
           onPress={() => {
-            this.handleButtonPress();
+            Vibration.vibrate(); // Adiciona vibração ao pressionar
             this.props.navigation.navigate('Dicas Financeiras');
-          }}>
+          }}
+        >
           <Text style={styles.buttonText}>Dicas Financeiras</Text>
         </TouchableOpacity>
       </View>
@@ -180,6 +181,7 @@ class FinancialTipsScreen extends React.Component {
           source={require('./assets/913d64b9fccbb80953a544db607ed561.jpg')}
           style={styles.image}
         />
+
         <Text style={styles.infoText}>
           1. Faça um planejamento financeiro mensal.
         </Text>
@@ -189,18 +191,10 @@ class FinancialTipsScreen extends React.Component {
           source={require('./assets/marcia-41.jpg')}
           style={styles.image}
         />
-        <Text style={styles.infoText}>
-          2. Evite gastar mais do que ganha.
-        </Text>
+
+        <Text style={styles.infoText}>2. Evite gastar mais do que ganha.</Text>
 
         {/* Mais dicas... */}
-        <Image
-          source={require('./assets/913d64b9fccbb80953a544db607ed561.jpg')} // Outra imagem
-          style={styles.image}
-        />
-        <Text style={styles.infoText}>
-          3. Invista em um fundo de emergência.
-        </Text>
 
         <TouchableOpacity
           style={styles.button}
@@ -230,7 +224,6 @@ class CalendarScreen extends React.Component {
     this.loadTransactions();
   }
 
-  // Carregar transações específicas para o usuário
   async loadTransactions() {
     const { usuario } = this.props.route.params;
     try {
@@ -245,7 +238,6 @@ class CalendarScreen extends React.Component {
     }
   }
 
-  // Salvar transações específicas para o usuário
   async saveTransaction() {
     const { day, weekDay, month, year, transactionType, amount } = this.state;
     if (!day || !weekDay || !month || !year || !transactionType || !amount) {
@@ -285,7 +277,6 @@ class CalendarScreen extends React.Component {
     }
   }
 
-  // Excluir transação específica do usuário
   async deleteTransaction(index) {
     const { usuario } = this.props.route.params;
     const updatedTransactions = this.state.transactions.filter(
@@ -336,67 +327,73 @@ class CalendarScreen extends React.Component {
           visible={this.state.modalVisible}
           animationType="slide"
           transparent={true}>
-          <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>Adicionar Transação</Text>
+          <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+            <View style={styles.modalContainer}>
+              <KeyboardAvoidingView
+                behavior="padding"
+                style={styles.modalInnerContainer}>
+                <Text style={styles.modalTitle}>Adicionar Transação</Text>
 
-            <TextInput
-              style={styles.input}
-              placeholder="Dia"
-              onChangeText={(text) => this.setState({ day: text })}
-              value={this.state.day}
-              keyboardType="numeric"
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Dia da Semana"
-              onChangeText={(text) => this.setState({ weekDay: text })}
-              value={this.state.weekDay}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Mês"
-              onChangeText={(text) => this.setState({ month: text })}
-              value={this.state.month}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Ano"
-              onChangeText={(text) => this.setState({ year: text })}
-              value={this.state.year}
-              keyboardType="numeric"
-            />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Dia"
+                  onChangeText={(text) => this.setState({ day: text })}
+                  value={this.state.day}
+                  keyboardType="numeric"
+                />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Dia da Semana"
+                  onChangeText={(text) => this.setState({ weekDay: text })}
+                  value={this.state.weekDay}
+                />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Mês"
+                  onChangeText={(text) => this.setState({ month: text })}
+                  value={this.state.month}
+                />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Ano"
+                  onChangeText={(text) => this.setState({ year: text })}
+                  value={this.state.year}
+                  keyboardType="numeric"
+                />
 
-            <Picker
-              selectedValue={this.state.transactionType}
-              style={styles.picker}
-              onValueChange={(itemValue) =>
-                this.setState({ transactionType: itemValue })
-              }>
-              <Picker.Item label="Recebida" value="Recebida" />
-              <Picker.Item label="Enviada" value="Enviada" />
-            </Picker>
+                <Picker
+                  selectedValue={this.state.transactionType}
+                  style={styles.picker}
+                  onValueChange={(itemValue) =>
+                    this.setState({ transactionType: itemValue })
+                  }>
+                  <Picker.Item label="Recebida" value="Recebida" />
+                  <Picker.Item label="Enviada" value="Enviada" />
+                </Picker>
 
-            <TextInput
-              style={styles.input}
-              placeholder="Valor"
-              onChangeText={(text) => this.setState({ amount: text })}
-              value={this.state.amount}
-              keyboardType="numeric"
-            />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Valor"
+                  onChangeText={(text) => this.setState({ amount: text })}
+                  value={this.state.amount}
+                  keyboardType="numeric"
+                />
 
-            <View style={styles.modalButtons}>
-              <Button
-                title="Cancelar"
-                onPress={() => this.setState({ modalVisible: false })}
-                color="#DAA520" // Dourado para o botão de cancelar
-              />
-              <Button
-                title="Salvar"
-                onPress={() => this.saveTransaction()}
-                color="#DAA520" // Dourado para o botão de salvar
-              />
+                <View style={styles.modalButtons}>
+                  <Button
+                    title="Cancelar"
+                    onPress={() => this.setState({ modalVisible: false })}
+                    color="#DAA520"
+                  />
+                  <Button
+                    title="Salvar"
+                    onPress={() => this.saveTransaction()}
+                    color="#DAA520"
+                  />
+                </View>
+              </KeyboardAvoidingView>
             </View>
-          </View>
+          </TouchableWithoutFeedback>
         </Modal>
       </View>
     );
@@ -413,7 +410,7 @@ class InvestmentCalendarScreen extends React.Component {
       year: '',
       investmentType: '',
       amount: '',
-      description: '', // Descrição do investimento
+      description: '',
     };
   }
 
@@ -421,9 +418,8 @@ class InvestmentCalendarScreen extends React.Component {
     this.loadInvestments();
   }
 
-  // Carregar investimentos do AsyncStorage
   async loadInvestments() {
-    const { usuario } = this.props.route.params; // Obtendo o nome do usuário passado via navegação
+    const { usuario } = this.props.route.params;
     try {
       const savedInvestments = await AsyncStorage.getItem(
         `${usuario}_investments`
@@ -436,24 +432,15 @@ class InvestmentCalendarScreen extends React.Component {
     }
   }
 
-  // Salvar investimento
   async saveInvestment() {
-    const { day, month, year, investmentType, amount, description } =
-      this.state;
+    const { day, month, year, investmentType, amount, description } = this.state;
     if (!day || !month || !year || !investmentType || !amount || !description) {
       alert('Por favor, preencha todos os campos.');
       return;
     }
 
     const { usuario } = this.props.route.params;
-    const newInvestment = {
-      day,
-      month,
-      year,
-      investmentType,
-      amount,
-      description,
-    };
+    const newInvestment = { day, month, year, investmentType, amount, description };
     const updatedInvestments = [...this.state.investments, newInvestment];
 
     try {
@@ -471,13 +458,13 @@ class InvestmentCalendarScreen extends React.Component {
         amount: '',
         description: '',
       });
+      Keyboard.dismiss(); // Oculta o teclado
       alert('Investimento salvo!');
     } catch (error) {
       console.log('Erro ao salvar investimento:', error);
     }
   }
 
-  // Excluir investimento
   async deleteInvestment(index) {
     const { usuario } = this.props.route.params;
     const updatedInvestments = this.state.investments.filter(
@@ -497,106 +484,112 @@ class InvestmentCalendarScreen extends React.Component {
 
   render() {
     return (
-      <View style={styles.container}>
-        <Text style={styles.title}>Calendário de Investimentos</Text>
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View style={styles.container}>
+            <Text style={styles.title}>Calendário de Investimentos</Text>
 
-        <FlatList
-          data={this.state.investments}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item, index }) => (
-            <View style={styles.transactionItem}>
-              <Text style={styles.transactionText}>
-                {item.day}/{item.month}/{item.year}: {item.investmentType} - R$
-                {item.amount} ({item.description})
-              </Text>
-              <Button
-                title="Apagar"
-                color="#FF6347"
-                onPress={() => this.deleteInvestment(index)}
-              />
-            </View>
-          )}
-        />
-
-        <TouchableOpacity
-          style={styles.addButton}
-          onPress={() => this.setState({ modalVisible: true })}>
-          <Text style={styles.addButtonText}>+ Adicionar Investimento</Text>
-        </TouchableOpacity>
-
-        <Modal
-          visible={this.state.modalVisible}
-          animationType="slide"
-          transparent={true}>
-          <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>Adicionar Investimento</Text>
-
-            <TextInput
-              style={styles.input}
-              placeholder="Dia"
-              onChangeText={(text) => this.setState({ day: text })}
-              value={this.state.day}
-              keyboardType="numeric"
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Mês"
-              onChangeText={(text) => this.setState({ month: text })}
-              value={this.state.month}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Ano"
-              onChangeText={(text) => this.setState({ year: text })}
-              value={this.state.year}
-              keyboardType="numeric"
+            <FlatList
+              data={this.state.investments}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={({ item, index }) => (
+                <View style={styles.transactionItem}>
+                  <Text style={styles.transactionText}>
+                    {item.day}/{item.month}/{item.year}: {item.investmentType} - R$
+                    {item.amount} ({item.description})
+                  </Text>
+                  <Button
+                    title="Apagar"
+                    color="#FF6347"
+                    onPress={() => this.deleteInvestment(index)}
+                  />
+                </View>
+              )}
             />
 
-            <Picker
-              selectedValue={this.state.investmentType}
-              style={styles.picker}
-              onValueChange={(itemValue) =>
-                this.setState({ investmentType: itemValue })
-              }>
-              <Picker.Item label="Ações" value="Ações" />
-              <Picker.Item
-                label="Fundo Imobiliário"
-                value="Fundo Imobiliário"
-              />
-              <Picker.Item label="Cripto" value="Cripto" />
-              <Picker.Item label="Renda Fixa" value="Renda Fixa" />
-            </Picker>
+            <TouchableOpacity
+              style={styles.addButton}
+              onPress={() => this.setState({ modalVisible: true })}>
+              <Text style={styles.addButtonText}>+ Adicionar Investimento</Text>
+            </TouchableOpacity>
 
-            <TextInput
-              style={styles.input}
-              placeholder="Valor"
-              onChangeText={(text) => this.setState({ amount: text })}
-              value={this.state.amount}
-              keyboardType="numeric"
-            />
+            <Modal
+              visible={this.state.modalVisible}
+              animationType="slide"
+              transparent={true}>
+              <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                <View style={styles.modalContainer}>
+                  <Text style={styles.modalTitle}>Adicionar Investimento</Text>
 
-            <TextInput
-              style={styles.input}
-              placeholder="Descrição (Onde Investiu)"
-              onChangeText={(text) => this.setState({ description: text })}
-              value={this.state.description}
-            />
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Dia"
+                    onChangeText={(text) => this.setState({ day: text })}
+                    value={this.state.day}
+                    keyboardType="numeric"
+                  />
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Mês"
+                    onChangeText={(text) => this.setState({ month: text })}
+                    value={this.state.month}
+                  />
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Ano"
+                    onChangeText={(text) => this.setState({ year: text })}
+                    value={this.state.year}
+                    keyboardType="numeric"
+                  />
 
-            <View style={styles.modalButtons}>
-              <Button
-                title="Cancelar"
-                onPress={() => this.setState({ modalVisible: false })}
-                color="#DAA520"
-              />
-              <Button
-                title="Salvar"
-                onPress={() => this.saveInvestment()}
-                color="#DAA520"
-              />
-            </View>
+                  <Picker
+                    selectedValue={this.state.investmentType}
+                    style={styles.picker}
+                    onValueChange={(itemValue) =>
+                      this.setState({ investmentType: itemValue })
+                    }>
+                    <Picker.Item label="Ações" value="Ações" />
+                    <Picker.Item label="Fundo Imobiliário" value="Fundo Imobiliário" />
+                    <Picker.Item label="Cripto" value="Cripto" />
+                    <Picker.Item label="Renda Fixa" value="Renda Fixa" />
+                  </Picker>
+
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Valor"
+                    onChangeText={(text) => this.setState({ amount: text })}
+                    value={this.state.amount}
+                    keyboardType="numeric"
+                  />
+
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Descrição (Onde Investiu)"
+                    onChangeText={(text) => this.setState({ description: text })}
+                    value={this.state.description}
+                  />
+
+                  <View style={styles.modalButtons}>
+                    <Button
+                      title="Cancelar"
+                      onPress={() => {
+                        this.setState({ modalVisible: false });
+                        Keyboard.dismiss(); // Oculta o teclado
+                      }}
+                      color="#DAA520"
+                    />
+                    <Button
+                      title="Salvar"
+                      onPress={() => this.saveInvestment()}
+                      color="#DAA520"
+                    />
+                  </View>
+                </View>
+              </TouchableWithoutFeedback>
+            </Modal>
           </View>
-        </Modal>
-      </View>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
     );
   }
 }
@@ -743,13 +736,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginTop: 20,
   },
-  
-
   image: {
-    width: '100%',  // Tamanho da imagem proporcional à largura da tela
-    height: 200,    // Altura fixa, ajustando para o layout
-    resizeMode: 'contain', // Ajusta a imagem sem distorção
-    marginBottom: 20,
+     width: '100%', // Define a imagem para preencher a largura do contêiner
+    height: 200, // Altura da imagem (pode ser ajustada conforme necessário)
+    resizeMode: 'contain', // Ajusta a imagem para conter no espaço sem cortar
+    marginVertical: 10, // Espaçamento vertical para separar as imagens das outras views
   },
-  
 });
