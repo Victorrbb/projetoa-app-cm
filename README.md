@@ -5,7 +5,7 @@ Este projeto é um aplicativo de controle financeiro pessoal, onde os usuários 
 # Login e Cadastro 
 
 As primeiras telas sao de login e cadastro onde você vai fazer seu cadastro caso for a primeira vez, e seu login caso nao for
-##
+
 ![image](https://github.com/user-attachments/assets/e5552fa7-cd95-4624-9aec-50017d648d8f) // ![image](https://github.com/user-attachments/assets/60b27bdd-262d-41f2-ae27-faee87227126)
 
 
